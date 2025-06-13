@@ -1,4 +1,5 @@
 ---
+{{- if not .Values.minio.storage.existingClaim }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -12,11 +13,11 @@ spec:
   {{- with .Values.minio.storage.className }}
   storageClassName: {{ . }}
   {{- end }}
-  accessModes:
-    - ReadWriteOnce
+  accessModes: {{ .Values.minio.storage.accessModes | toYaml | nindent 4 }}
   resources:
     requests:
       storage: {{ .Values.minio.storage.capacity }}
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -68,7 +69,11 @@ spec:
       volumes:
         - name: minio-data
           persistentVolumeClaim:
+            {{- if .Values.minio.storage.existingClaim }}
+            claimName: {{ .Values.minio.storage.existingClaim }}
+            {{- else }}
             claimName: {{ include "ragflow.fullname" . }}-minio
+            {{- end }}
 ---
 apiVersion: v1
 kind: Service

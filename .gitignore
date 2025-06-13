@@ -44,3 +44,13 @@ nltk_data/
 .lh/
 .venv
 docker/data
+
+# Exclude downloaded temprary files
+chrome-linux64-121-0-6167-85
+chromedriver-linux64-121-0-6167-85
+cl100k_base.tiktoken
+libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+libssl1.1_1.1.1f-1ubuntu2_arm64.deb
+tika-server-standard-3.0.0.jar
+tika-server-standard-3.0.0.jar.md5
+

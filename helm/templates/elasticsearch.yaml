@@ -1,4 +1,6 @@
 {{- if eq .Values.env.DOC_ENGINE "elasticsearch" -}}
+{{/* Only create PVC if not using existing claim */}}
+{{- if not .Values.elasticsearch.storage.existingClaim }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -12,11 +14,11 @@ spec:
   {{- with .Values.elasticsearch.storage.className }}
   storageClassName: {{ . }}
   {{- end }}
-  accessModes:
-    - ReadWriteOnce
+  accessModes: {{ .Values.elasticsearch.storage.accessModes | toYaml | nindent 4 }}
   resources:
     requests:
       storage: {{ .Values.elasticsearch.storage.capacity }}
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -47,6 +49,7 @@ spec:
       initContainers:
       - name: fix-data-volume-permissions
         image: alpine
+        imagePullPolicy: IfNotPresent
         command:
         - sh
         - -c
@@ -56,6 +59,7 @@ spec:
             name: es-data
       - name: sysctl
         image: busybox
+        imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
           runAsUser: 0
@@ -92,7 +96,11 @@ spec:
       volumes:
         - name: es-data
           persistentVolumeClaim:
+            {{- if .Values.elasticsearch.storage.existingClaim }}
+            claimName: {{ .Values.elasticsearch.storage.existingClaim }}
+            {{- else }}
             claimName: {{ include "ragflow.fullname" . }}-es-data
+            {{- end }}
 ---
 apiVersion: v1
 kind: Service

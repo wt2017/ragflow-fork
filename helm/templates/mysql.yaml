@@ -1,4 +1,5 @@
 ---
+{{- if not .Values.mysql.storage.existingClaim }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -12,11 +13,11 @@ spec:
   {{- with .Values.mysql.storage.className }}
   storageClassName: {{ . }}
   {{- end }}
-  accessModes:
-    - ReadWriteOnce
+  accessModes: {{ .Values.mysql.storage.accessModes | toYaml | nindent 4 }}
   resources:
     requests:
       storage: {{ .Values.mysql.storage.capacity }}
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -75,7 +76,11 @@ spec:
       volumes:
         - name: mysql-data
           persistentVolumeClaim:
+            {{- if .Values.mysql.storage.existingClaim }}
+            claimName: {{ .Values.mysql.storage.existingClaim }}
+            {{- else }}
             claimName: {{ include "ragflow.fullname" . }}-mysql
+            {{- end }}
         - name: init-script-volume
           configMap:
             name: mysql-init-script

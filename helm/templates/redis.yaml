@@ -63,7 +63,13 @@ spec:
           resources:
             {{- . | toYaml | nindent 12 }}
           {{- end }}
-  {{- if .Values.redis.persistence.enabled }}
+      {{- if and .Values.redis.persistence.enabled .Values.redis.storage.existingClaim }}
+      volumes:
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.redis.storage.existingClaim }}
+      {{- end }}
+  {{- if and .Values.redis.persistence.enabled (not .Values.redis.storage.existingClaim) }}
   volumeClaimTemplates:
     - metadata:
         name: redis-data
@@ -71,8 +77,7 @@ spec:
           {{- include "ragflow.labels" . | nindent 10 }}
           app.kubernetes.io/component: redis
       spec:
-        accessModes:
-          - ReadWriteOnce
+        accessModes: {{ .Values.redis.storage.accessModes | toYaml | nindent 10 }}
         {{- with .Values.redis.storage.className }}
         storageClassName: {{ . }}
         {{- end }}

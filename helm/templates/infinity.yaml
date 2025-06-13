@@ -12,8 +12,7 @@ spec:
   {{- with .Values.infinity.storage.className }}
   storageClassName: {{ . }}
   {{- end }}
-  accessModes:
-    - ReadWriteOnce
+  accessModes: {{ .Values.infinity.storage.accessModes | toYaml | nindent 4 }}
   resources:
     requests:
       storage: {{ .Values.infinity.storage.capacity }}

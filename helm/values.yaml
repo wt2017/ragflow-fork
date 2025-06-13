@@ -4,8 +4,8 @@ env:
   # Available options:
   # - `elasticsearch` (default)
   # - `infinity` (https://github.com/infiniflow/infinity)
-  # DOC_ENGINE: elasticsearch
-  DOC_ENGINE: infinity
+  DOC_ENGINE: elasticsearch
+  # DOC_ENGINE: infinity
 
   # The version of Elasticsearch.
   STACK_VERSION: "8.11.3"
