@@ -1,4 +1,5 @@
 {{- if eq .Values.env.DOC_ENGINE "opensearch" -}}
+{{- if not .Values.opensearch.storage.existingClaim }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -17,6 +18,7 @@ spec:
   resources:
     requests:
       storage: {{ .Values.opensearch.storage.capacity }}
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -114,7 +116,7 @@ spec:
       volumes:
         - name: opensearch-data
           persistentVolumeClaim:
-            claimName: {{ include "ragflow.fullname" . }}-opensearch-data
+            claimName: {{ .Values.opensearch.storage.existingClaim | default (printf "%s-opensearch-data" (include "ragflow.fullname" .)) }}
 ---
 apiVersion: v1
 kind: Service
