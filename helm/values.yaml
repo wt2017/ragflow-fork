@@ -76,7 +76,7 @@ env:
 
 ragflow:
   image:
-    repository: infiniflow/ragflow
+    repository: docker.io/infiniflow/ragflow
     tag: v0.24.0
     pullPolicy: IfNotPresent
     pullSecrets: []
@@ -116,13 +116,14 @@ ragflow:
 
 infinity:
   image:
-    repository: infiniflow/infinity
+    repository: docker.io/infiniflow/infinity
     tag: v0.7.0-dev2
     pullPolicy: IfNotPresent
     pullSecrets: []
   storage:
-    className:
-    capacity: 5Gi
+    className: "manual"
+    existingClaim: "pvc-ragflow-es"
+    capacity: 32Gi
   deployment:
     strategy:
     resources:
@@ -131,7 +132,7 @@ infinity:
 
 elasticsearch:
   image:
-    repository: elasticsearch
+    repository: docker.io/library/elasticsearch
     tag: "8.11.3"
     pullPolicy: IfNotPresent
     pullSecrets: []
@@ -145,8 +146,9 @@ elasticsearch:
       tag: latest
       pullPolicy: IfNotPresent
   storage:
-    className:
-    capacity: 20Gi
+    className: "manual"
+    existingClaim: "pvc-ragflow-es"
+    capacity: 32Gi
   deployment:
     strategy:
     resources:
@@ -158,7 +160,7 @@ elasticsearch:
 
 opensearch:
   image:
-    repository: opensearchproject/opensearch
+    repository: docker.io/opensearchproject/opensearch
     tag: 2.19.1
     pullPolicy: IfNotPresent
     pullSecrets: []
@@ -172,8 +174,9 @@ opensearch:
       tag: latest
       pullPolicy: IfNotPresent
   storage:
-    className:
-    capacity: 20Gi
+    className: "manual"
+    existingClaim: "pvc-ragflow-es"
+    capacity: 32Gi
   deployment:
     strategy:
     resources:
@@ -191,8 +194,9 @@ minio:
     pullPolicy: IfNotPresent
     pullSecrets: []
   storage:
-    className:
-    capacity: 5Gi
+    className: "manual"
+    existingClaim: "pvc-ragflow-minio"
+    capacity: 4Gi
   deployment:
     strategy:
     resources:
@@ -202,13 +206,14 @@ minio:
 mysql:
   enabled: true
   image:
-    repository: mysql
+    repository: docker.io/library/mysql
     tag: 8.0.39
     pullPolicy: IfNotPresent
     pullSecrets: []
   storage:
-    className:
-    capacity: 5Gi
+    className: "manual"
+    existingClaim: "pvc-ragflow-mysql"
+    capacity: 4Gi
   deployment:
     strategy:
     resources:
@@ -218,13 +223,14 @@ mysql:
 redis:
   enabled: true
   image:
-    repository: valkey/valkey
+    repository: docker.io/valkey/valkey
     tag: 8
     pullPolicy: IfNotPresent
     pullSecrets: []
   storage:
-    className:
-    capacity: 5Gi
+    className: "manual"
+    existingClaim: "pvc-ragflow-redis"
+    capacity: 4Gi
   persistence:
     enabled: true
     # Set's the retention policy for the persistent storage (only available in k8s 1.32 or later)

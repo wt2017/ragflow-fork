@@ -1,4 +1,5 @@
 {{- if .Values.minio.enabled }}
+{{- if not .Values.minio.storage.existingClaim }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -18,6 +19,7 @@ spec:
   resources:
     requests:
       storage: {{ .Values.minio.storage.capacity }}
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -53,6 +55,7 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
       {{- end }}
+      hostIPC: true
       containers:
       - name: minio
         image: {{ include "ragflow.imageRepo" (dict "root" . "repo" .Values.minio.image.repository) }}:{{ .Values.minio.image.tag }}
@@ -81,7 +84,7 @@ spec:
       volumes:
         - name: minio-data
           persistentVolumeClaim:
-            claimName: {{ include "ragflow.fullname" . }}-minio
+            claimName: {{ .Values.minio.storage.existingClaim | default (printf "%s-minio" (include "ragflow.fullname" .)) }}
 ---
 apiVersion: v1
 kind: Service
