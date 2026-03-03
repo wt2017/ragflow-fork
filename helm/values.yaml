@@ -113,6 +113,13 @@ ragflow:
     service:
       enabled: true
       type: ClusterIP
+  admin:
+    # Enable Admin Service
+    enabled: true
+    # Admin Service port configuration
+    port: 9381
+    # Admin Service type
+    serviceType: ClusterIP
 
 infinity:
   image:
